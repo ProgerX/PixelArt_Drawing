@@ -4,7 +4,12 @@
     
 </head>
 <body>
-    <canvas width="1280px" height="720px" id="Draw_Canvas" onmousemove="mouseMove()" onmousedown="mouseClick()"></canvas>
+    <canvas width="640px" height="640px" id="Back_Canvas"></canvas>
+    <canvas width="640px" height="640px" id="Draw_Canvas" onmousemove="mouseMove()" onmousedown="mouseClick()"></canvas>
+    <input type="color" id="colorPicker" onchange="colorChanged()">
+    <input type="button" onclick="toolChange(0)">
+    <input type="button" onclick="toolChange(1)">
+
 
     <script src="script.js"></script>
 
