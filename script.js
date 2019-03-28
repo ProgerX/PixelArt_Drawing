@@ -1,4 +1,4 @@
-const pixelSize = 1;
+const pixelSize = 10, backPixelSize = 10;
 let Canvas = document.getElementById("Draw_Canvas");
 let ctx = Canvas.getContext("2d");
 let backCanvas = document.getElementById("Back_Canvas");
@@ -18,27 +18,27 @@ function toolChange(vlu){
 
 drawGrid();
 function drawGrid(){
-   
+    
     let col = "rgb(217, 217, 217)";
-
-    for(let i = 0, k = true; i < W/pixelSize; i++){        
-        for(let j = 0; j < H/pixelSize; j++){
+    
+    for(let i = 0, k = true; i < W/backPixelSize; i++){        
+        for(let j = 0; j < H/backPixelSize; j++){
             if(k){
                 col = "rgb(217, 217, 217)";
                 k=false;
             }
             else{
                 col = "rgb(255, 255, 255)";
-            k=true;
+                k=true;
             }
-
+            
             ctxBack.fillStyle = col;
-            ctxBack.fillRect(i*pixelSize,j*pixelSize,pixelSize,pixelSize);
+            ctxBack.fillRect(i*backPixelSize,j*backPixelSize,backPixelSize,backPixelSize);
         }
         if(k)
-            k=false;
+        k=false;
         else
-            k=true;
+        k=true;
     }
 }
 
@@ -46,23 +46,40 @@ function mouseClick(){
     if(event.which == 1){    
         let x = event.clientX - Canvas.getBoundingClientRect().left;
         let y = event.clientY - Canvas.getBoundingClientRect().top;
-        
+        toolIndex=1;
         let p1 = convertPoint(x,y);
         p2=p1;
         drawLine(p2,p1);
     }
+    if(event.which == 3){
+        let x = event.clientX - Canvas.getBoundingClientRect().left;
+        let y = event.clientY - Canvas.getBoundingClientRect().top;
+        let p1 = convertPoint(x,y);
+        toolIndex=0;
+        p2=p1;
+        drawLine(p2,p1);
+    }
 }
-
 function mouseMove(){
     
     if(event.which == 1){
         let x = event.clientX - Canvas.getBoundingClientRect().left;
         let y = event.clientY - Canvas.getBoundingClientRect().top;
         let p1 = convertPoint(x,y);
+        toolIndex=1;
+        drawLine(p2,p1);
+        p2=p1;
+    }
+    if(event.which == 3){
+        let x = event.clientX - Canvas.getBoundingClientRect().left;
+        let y = event.clientY - Canvas.getBoundingClientRect().top;
+        let p1 = convertPoint(x,y);
+        toolIndex=0;
         drawLine(p2,p1);
         p2=p1;
     }
 }
+document.getElementById("Draw_Canvas").oncontextmenu=new Function('return false');
 
 function convertPoint(x,y){
     return P(Math.floor(x/pixelSize)*pixelSize,Math.floor(y/pixelSize)*pixelSize);
@@ -71,7 +88,7 @@ function P(x,y){return {x:x,y:y}}
 
 function drawLine(P1,P2){
     ctx.fillStyle = Color;
-
+    
     let deltaX = Math.abs(P2.x - P1.x);
     let deltaY = Math.abs(P2.y - P1.y);
     let signX = P1.x < P2.x ? pixelSize : -pixelSize;
@@ -80,16 +97,16 @@ function drawLine(P1,P2){
     let error = deltaX - deltaY;
     
     if(toolIndex==1)
-        ctx.fillRect(P2.x,P2.y,pixelSize,pixelSize);
+    ctx.fillRect(P2.x,P2.y,pixelSize,pixelSize);
     else
-        ctx.clearRect(P2.x, P2.y, pixelSize, pixelSize);
-
+    ctx.clearRect(P2.x, P2.y, pixelSize, pixelSize);
+    
     while(P1.x != P2.x || P1.y != P2.y) 
-   {        
+    {        
         if(toolIndex==1)
-            ctx.fillRect(P1.x,P1.y,pixelSize,pixelSize);
+        ctx.fillRect(P1.x,P1.y,pixelSize,pixelSize);
         else
-            ctx.clearRect(P1.x, P1.y, pixelSize, pixelSize);
+        ctx.clearRect(P1.x, P1.y, pixelSize, pixelSize);
         let error2 = error * 2;
         
         if(error2 > -deltaY) 
