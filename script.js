@@ -1,4 +1,4 @@
-const pixelSize = 10;
+const pixelSize = 1;
 let Canvas = document.getElementById("Draw_Canvas");
 let ctx = Canvas.getContext("2d");
 let backCanvas = document.getElementById("Back_Canvas");
