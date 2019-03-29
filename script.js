@@ -7,13 +7,13 @@ let W = Canvas.offsetWidth;
 let H = Canvas.offsetHeight;
 let p2;
 let Color = document.getElementById("colorPicker").value;
-let toolIndex = 1;
+let toolIndex = 1,tools = 1;
 
 function colorChanged(){
     Color = document.getElementById("colorPicker").value;
 }
 function toolChange(vlu){
-    toolIndex=vlu;   
+    tools=vlu;   
 }
 
 drawGrid();
@@ -96,14 +96,14 @@ function drawLine(P1,P2){
     
     let error = deltaX - deltaY;
     
-    if(toolIndex==1)
+    if(toolIndex==1 && tools == 1)
     ctx.fillRect(P2.x,P2.y,pixelSize,pixelSize);
     else
     ctx.clearRect(P2.x, P2.y, pixelSize, pixelSize);
     
     while(P1.x != P2.x || P1.y != P2.y) 
     {        
-        if(toolIndex==1)
+        if(toolIndex==1 && tools == 1)
         ctx.fillRect(P1.x,P1.y,pixelSize,pixelSize);
         else
         ctx.clearRect(P1.x, P1.y, pixelSize, pixelSize);
