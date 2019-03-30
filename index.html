@@ -3,12 +3,101 @@
     <link rel="stylesheet" href="style.css">  
 </head>
 <body>
-    <canvas width="640px" height="640px" id="Back_Canvas"></canvas>
-    <canvas width="640px" height="640px" id="Draw_Canvas" onmousemove="mouseMove()" onmousedown="mouseClick()"></canvas>
-    <input type="color" id="colorPicker" onchange="colorChanged()">
-    <input type="button" onclick="toolChange(0)">
-    <input type="button" onclick="toolChange(1)">
-    <script src="script.js"></script>
+    <div class="canvas">
+        <canvas width="640px" height="640px" id="Back_Canvas"></canvas>
+        <canvas width="640px" height="640px" id="Draw_Canvas" onmousemove="mouseMove()" onmousedown="mouseClick()"></canvas>
+    </div>
+    <table>
+        <tr>
+            <td>
+                <input type="button" onclick="toolChange(0)">
+                <input type="button" onclick="toolChange(1)">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(0)" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(1)" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(2)" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(3)" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(4)" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(5)" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(6)" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(7)" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(8)" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(9)" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(10)" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(11)" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(12)" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(13)" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(14)" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(15)" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(16)" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange()" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                </table>
+                <input type="color" id="colorPicker" onchange="colorChanged()">
+            </td>
+        </tr>
 
+    </table>
+
+
+
+    <script src="script.js"></script>
 </body>
 </html>

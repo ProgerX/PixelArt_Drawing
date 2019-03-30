@@ -1,4 +1,4 @@
-const pixelSize = 10, backPixelSize = 10;
+const pixelSize = 30, backPixelSize = 10;
 let Canvas = document.getElementById("Draw_Canvas");
 let ctx = Canvas.getContext("2d");
 let backCanvas = document.getElementById("Back_Canvas");
@@ -6,14 +6,25 @@ let ctxBack = backCanvas.getContext("2d");
 let W = Canvas.offsetWidth;
 let H = Canvas.offsetHeight;
 let p2;
-let Color = document.getElementById("colorPicker").value;
+let colorPicker = document.getElementById("colorPicker");
+let Color = colorPicker.value;
 let toolIndex = 1,tools = 1;
+let colors = ['#000000','#FFFFFF','#808080','#D3D3D3','#8B0000','#964B00','#FF0000','#FF69B4','#FFA500','#FFD700','#FFFF00','#FFD697','#00FF00','#ADFF2F','#4B0082','#40E0D0','#0000FF','#800080'];
+let colorDiv = document.getElementsByClassName("colorDiv");
+    for(let i  = 0;i<colorDiv.length;i++){
+        colorDiv[i].style.backgroundColor = colors[i];
+    }
+
 
 function colorChanged(){
-    Color = document.getElementById("colorPicker").value;
+    Color = colorPicker.value;
+}
+function colorChange(ind){
+    Color = colors[ind];
+    colorPicker.value=colors[ind];
 }
 function toolChange(vlu){
-    tools=vlu;   
+    tools=vlu;
 }
 
 drawGrid();
@@ -50,6 +61,22 @@ function mouseClick(){
         let p1 = convertPoint(x,y);
         p2=p1;
         drawLine(p2,p1);
+    }
+    function rgbToHex(rgb){
+        return "#" + ((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1);
+    }
+
+    if(event.which == 2){
+        let clr = ctx.getImageData(event.clientX - Canvas.getBoundingClientRect().left,event.clientY - Canvas.getBoundingClientRect().top,1,1).data;
+        if(clr=='0,0,0,0'){
+            tools=0;
+        }
+        else
+        {
+            colorPicker.value=rgbToHex(clr);
+            Color = colorPicker.value;
+            tools=1;
+        }    
     }
     if(event.which == 3){
         let x = event.clientX - Canvas.getBoundingClientRect().left;
