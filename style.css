@@ -2,7 +2,7 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%,-50%);    
+    transform: translate(-50%,-50%);
 }
 #Back_Canvas{
     position: absolute;
@@ -13,5 +13,27 @@
 .colorDiv{
     width: 30px;
     height: 30px;
-    box-shadow: inset 0 0 0 1px  #000000,inset 0 0 0 2px #ffffff,inset 0 0 0 3px #000000;    
+    box-shadow: inset 0 0 0 1px  #000000,inset 0 0 0 2px #ffffff,inset 0 0 0 3px #000000;
+    cursor: pointer;
+}
+.Tools{
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+#colorPicker{
+    cursor: pointer;
+}
+#pencil{
+    background: url(Tools/pencil.png) no-repeat center;    
+    box-shadow: inset 0 0 0 2px blue;
+}
+#eraser{
+    background: url(Tools/eraser.png) no-repeat center;
+}
+#fill{
+    background: url(Tools/fill.png) no-repeat center;
+}
+#pipette{
+    background: url(Tools/pipette.png) no-repeat center;
 }

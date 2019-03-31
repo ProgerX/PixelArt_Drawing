@@ -1,4 +1,4 @@
-const pixelSize = 30, backPixelSize = 10;
+const pixelSize = 10, backPixelSize = 10;
 let Canvas = document.getElementById("Draw_Canvas");
 let ctx = Canvas.getContext("2d");
 let backCanvas = document.getElementById("Back_Canvas");
@@ -8,13 +8,18 @@ let H = Canvas.offsetHeight;
 let p2;
 let colorPicker = document.getElementById("colorPicker");
 let Color = colorPicker.value;
-let toolIndex = 1,tools = 1;
+let toolIndex = 0;
+let Tools = document.getElementsByClassName('Tools');
+let toolsImages = ['url(Tools/pencil.png)','url(Tools/eraser.png)','url(Tools/fill.png)','url(Tools/pipette.png)'];
 let colors = ['#000000','#FFFFFF','#808080','#D3D3D3','#8B0000','#964B00','#FF0000','#FF69B4','#FFA500','#FFD700','#FFFF00','#FFD697','#00FF00','#ADFF2F','#4B0082','#40E0D0','#0000FF','#800080'];
 let colorDiv = document.getElementsByClassName("colorDiv");
-    for(let i  = 0;i<colorDiv.length;i++){
-        colorDiv[i].style.backgroundColor = colors[i];
-    }
-
+for(let i  = 0;i<colorDiv.length;i++){
+    colorDiv[i].style.backgroundColor = colors[i];
+}
+changeCursor(0);
+function changeCursor(n){
+    Canvas.style.cursor = toolsImages[n]+'0 17,auto';
+}
 
 function colorChanged(){
     Color = colorPicker.value;
@@ -24,7 +29,170 @@ function colorChange(ind){
     colorPicker.value=colors[ind];
 }
 function toolChange(vlu){
-    tools=vlu;
+    toolIndex=vlu;
+    changeCursor(vlu);
+    for(let i = 0; i<Tools.length;i++){
+        Tools[i].style.boxShadow = 'inset 0 0 0 0 blue';
+    }
+    
+    Tools[vlu].style.boxShadow = 'inset 0 0 0 2px blue';
+}
+
+function rgbToHex(rgb){
+    return "#" + ((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1);
+}
+function mouseClick(){
+    if(event.which == 1){    
+        let x = event.clientX - Canvas.getBoundingClientRect().left;
+        let y = event.clientY - Canvas.getBoundingClientRect().top;
+        let p1 = convertPoint(x,y);
+        p2=p1;
+        drawLine(p2,p1,0);
+    } 
+    else
+    if(event.which == 2){
+        let clr = ctx.getImageData(event.clientX - Canvas.getBoundingClientRect().left,event.clientY - Canvas.getBoundingClientRect().top,1,1).data;
+        if(clr=='0,0,0,0'){
+            toolIndex=1;
+            changeCursor(1);
+            for(let i = 0; i<Tools.length;i++){
+                Tools[i].style.boxShadow = 'inset 0 0 0 0 blue';
+            }            
+            Tools[1].style.boxShadow = 'inset 0 0 0 2px blue';
+            
+        }
+        else
+        {
+            colorPicker.value=rgbToHex(clr);
+            Color = colorPicker.value;
+            toolIndex=0;
+            changeCursor(0);
+            for(let i = 0; i<Tools.length;i++){
+                Tools[i].style.boxShadow = 'inset 0 0 0 0 blue';
+            }
+            
+            Tools[0].style.boxShadow = 'inset 0 0 0 2px blue';
+        }    
+    }
+    else
+    if(event.which == 3){
+        let x = event.clientX - Canvas.getBoundingClientRect().left;
+        let y = event.clientY - Canvas.getBoundingClientRect().top;
+        let p1 = convertPoint(x,y);       
+        p2=p1;
+        drawLine(p2,p1,1);
+    }    
+}
+function mouseMove(){
+    
+    if(event.which == 1){
+        let x = event.clientX - Canvas.getBoundingClientRect().left;
+        let y = event.clientY - Canvas.getBoundingClientRect().top;
+        let p1 = convertPoint(x,y);
+        drawLine(p2,p1,0);
+        p2=p1;
+    }
+    else
+    if(event.which == 3){
+        let x = event.clientX - Canvas.getBoundingClientRect().left;
+        let y = event.clientY - Canvas.getBoundingClientRect().top;
+        let p1 = convertPoint(x,y);
+        drawLine(p2,p1,1);
+        p2=p1;
+    }else
+    if(event.which != 2){
+        changeCursor(toolIndex);
+    }
+}
+document.getElementById("Draw_Canvas").oncontextmenu=new Function('return false');
+
+function colorDivHover(ind){
+    
+    for(let i = 0;i<colorDiv.length;i++){
+        colorDiv[i].style.boxShadow = '';
+    }
+    colorDiv[ind].style.boxShadow = '0 0 4px black';
+    
+}
+
+function colorDivOut(){
+    for(let i = 0;i<colorDiv.length;i++){
+        colorDiv[i].style.boxShadow = '';
+    }
+}
+
+
+function convertPoint(x,y){
+    return P(Math.floor(x/pixelSize)*pixelSize,Math.floor(y/pixelSize)*pixelSize);
+}
+function P(x,y){return {x,y}}
+
+function drawLine(P1,P2,n){
+    ctx.fillStyle = Color;
+    
+    let deltaX = Math.abs(P2.x - P1.x);
+    let deltaY = Math.abs(P2.y - P1.y);
+    let signX = P1.x < P2.x ? pixelSize : -pixelSize;
+    let signY = P1.y < P2.y ? pixelSize : -pixelSize;
+    
+    let error = deltaX - deltaY;
+    
+    if(toolIndex == 0 && n == 0){
+        ctx.fillRect(P2.x,P2.y,pixelSize,pixelSize);
+        changeCursor(0);
+    }
+    else
+    if(toolIndex == 0)
+    {
+        ctx.clearRect(P2.x, P2.y, pixelSize, pixelSize);
+        changeCursor(1);
+    }
+
+    if(toolIndex == 1 && n == 0){
+        ctx.clearRect(P2.x, P2.y, pixelSize, pixelSize);
+        changeCursor(1);
+    }
+    else
+    if(toolIndex == 1){
+        ctx.fillRect(P2.x,P2.y,pixelSize,pixelSize);
+        changeCursor(0);
+    }
+    
+    while(P1.x != P2.x || P1.y != P2.y) 
+    {        
+        if(toolIndex == 0 && n == 0){
+        ctx.fillRect(P1.x,P1.y,pixelSize,pixelSize);
+        changeCursor(0);
+        }
+        else
+        if(toolIndex == 0)
+        {
+            ctx.clearRect(P1.x, P1.y, pixelSize, pixelSize);
+            changeCursor(1);
+        }
+
+        if(toolIndex == 1 && n == 0){
+            ctx.clearRect(P1.x, P1.y, pixelSize, pixelSize);
+            changeCursor(1);
+        }
+        else
+        if(toolIndex == 1){
+            ctx.fillRect(P1.x,P1.y,pixelSize,pixelSize);
+            changeCursor(0);
+        }
+        let error2 = error * 2;
+        
+        if(error2 > -deltaY) 
+        {
+            error -= deltaY;
+            P1.x += signX;
+        }
+        if(error2 < deltaX) 
+        {
+            error += deltaX;
+            P1.y += signY;
+        }
+    }
 }
 
 drawGrid();
@@ -50,101 +218,5 @@ function drawGrid(){
         k=false;
         else
         k=true;
-    }
-}
-
-function mouseClick(){
-    if(event.which == 1){    
-        let x = event.clientX - Canvas.getBoundingClientRect().left;
-        let y = event.clientY - Canvas.getBoundingClientRect().top;
-        toolIndex=1;
-        let p1 = convertPoint(x,y);
-        p2=p1;
-        drawLine(p2,p1);
-    }
-    function rgbToHex(rgb){
-        return "#" + ((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1);
-    }
-
-    if(event.which == 2){
-        let clr = ctx.getImageData(event.clientX - Canvas.getBoundingClientRect().left,event.clientY - Canvas.getBoundingClientRect().top,1,1).data;
-        if(clr=='0,0,0,0'){
-            tools=0;
-        }
-        else
-        {
-            colorPicker.value=rgbToHex(clr);
-            Color = colorPicker.value;
-            tools=1;
-        }    
-    }
-    if(event.which == 3){
-        let x = event.clientX - Canvas.getBoundingClientRect().left;
-        let y = event.clientY - Canvas.getBoundingClientRect().top;
-        let p1 = convertPoint(x,y);
-        toolIndex=0;
-        p2=p1;
-        drawLine(p2,p1);
-    }
-}
-function mouseMove(){
-    
-    if(event.which == 1){
-        let x = event.clientX - Canvas.getBoundingClientRect().left;
-        let y = event.clientY - Canvas.getBoundingClientRect().top;
-        let p1 = convertPoint(x,y);
-        toolIndex=1;
-        drawLine(p2,p1);
-        p2=p1;
-    }
-    if(event.which == 3){
-        let x = event.clientX - Canvas.getBoundingClientRect().left;
-        let y = event.clientY - Canvas.getBoundingClientRect().top;
-        let p1 = convertPoint(x,y);
-        toolIndex=0;
-        drawLine(p2,p1);
-        p2=p1;
-    }
-}
-document.getElementById("Draw_Canvas").oncontextmenu=new Function('return false');
-
-function convertPoint(x,y){
-    return P(Math.floor(x/pixelSize)*pixelSize,Math.floor(y/pixelSize)*pixelSize);
-}
-function P(x,y){return {x:x,y:y}}
-
-function drawLine(P1,P2){
-    ctx.fillStyle = Color;
-    
-    let deltaX = Math.abs(P2.x - P1.x);
-    let deltaY = Math.abs(P2.y - P1.y);
-    let signX = P1.x < P2.x ? pixelSize : -pixelSize;
-    let signY = P1.y < P2.y ? pixelSize : -pixelSize;
-    
-    let error = deltaX - deltaY;
-    
-    if(toolIndex==1 && tools == 1)
-    ctx.fillRect(P2.x,P2.y,pixelSize,pixelSize);
-    else
-    ctx.clearRect(P2.x, P2.y, pixelSize, pixelSize);
-    
-    while(P1.x != P2.x || P1.y != P2.y) 
-    {        
-        if(toolIndex==1 && tools == 1)
-        ctx.fillRect(P1.x,P1.y,pixelSize,pixelSize);
-        else
-        ctx.clearRect(P1.x, P1.y, pixelSize, pixelSize);
-        let error2 = error * 2;
-        
-        if(error2 > -deltaY) 
-        {
-            error -= deltaY;
-            P1.x += signX;
-        }
-        if(error2 < deltaX) 
-        {
-            error += deltaX;
-            P1.y += signY;
-        }
     }
 }

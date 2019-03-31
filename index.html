@@ -7,11 +7,88 @@
         <canvas width="640px" height="640px" id="Back_Canvas"></canvas>
         <canvas width="640px" height="640px" id="Draw_Canvas" onmousemove="mouseMove()" onmousedown="mouseClick()"></canvas>
     </div>
-    <table>
+    <table border="1">
         <tr>
             <td>
-                <input type="button" onclick="toolChange(0)">
-                <input type="button" onclick="toolChange(1)">
+                <table>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(0)" onmousemove="colorDivHover(0)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(1)" onmousemove="colorDivHover(1)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(2)" onmousemove="colorDivHover(2)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(3)" onmousemove="colorDivHover(3)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(4)" onmousemove="colorDivHover(4)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(5)" onmousemove="colorDivHover(5)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(6)" onmousemove="colorDivHover(6)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(7)" onmousemove="colorDivHover(7)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(8)" onmousemove="colorDivHover(8)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(9)" onmousemove="colorDivHover(9)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(10)" onmousemove="colorDivHover(10)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(11)" onmousemove="colorDivHover(11)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(12)" onmousemove="colorDivHover(12)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(13)" onmousemove="colorDivHover(13)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(14)" onmousemove="colorDivHover(14)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(15)" onmousemove="colorDivHover(15)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div onclick="colorChange(16)" onmousemove="colorDivHover(16)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                        <td>
+                            <div onclick="colorChange(17)" onmousemove="colorDivHover(17)" onmouseout="colorDivOut()" class="colorDiv"></div>
+                        </td>
+                        <tr>
+                            <td colspan="2" align="center">
+                                <input type="color" id="colorPicker" onchange="colorChanged()">
+                            </td>
+                        </tr>
+                    </tr>
+                </table>
             </td>
         </tr>
         <tr>
@@ -19,78 +96,21 @@
                 <table>
                     <tr>
                         <td>
-                            <div onclick="colorChange(0)" class="colorDiv"></div>
+                            <input type="button" id="pencil" class="Tools" onclick="toolChange(0)">
                         </td>
                         <td>
-                            <div onclick="colorChange(1)" class="colorDiv"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div onclick="colorChange(2)" class="colorDiv"></div>
-                        </td>
-                        <td>
-                            <div onclick="colorChange(3)" class="colorDiv"></div>
+                            <input type="button" id="eraser" class="Tools" onclick="toolChange(1)">
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <div onclick="colorChange(4)" class="colorDiv"></div>
+                            <input type="button" id="fill" class="Tools" onclick="toolChange(2)">
                         </td>
                         <td>
-                            <div onclick="colorChange(5)" class="colorDiv"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div onclick="colorChange(6)" class="colorDiv"></div>
-                        </td>
-                        <td>
-                            <div onclick="colorChange(7)" class="colorDiv"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div onclick="colorChange(8)" class="colorDiv"></div>
-                        </td>
-                        <td>
-                            <div onclick="colorChange(9)" class="colorDiv"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div onclick="colorChange(10)" class="colorDiv"></div>
-                        </td>
-                        <td>
-                            <div onclick="colorChange(11)" class="colorDiv"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div onclick="colorChange(12)" class="colorDiv"></div>
-                        </td>
-                        <td>
-                            <div onclick="colorChange(13)" class="colorDiv"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div onclick="colorChange(14)" class="colorDiv"></div>
-                        </td>
-                        <td>
-                            <div onclick="colorChange(15)" class="colorDiv"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div onclick="colorChange(16)" class="colorDiv"></div>
-                        </td>
-                        <td>
-                            <div onclick="colorChange()" class="colorDiv"></div>
+                            <input type="button" id="pipette" class="Tools" onclick="toolChange(3)">
                         </td>
                     </tr>
                 </table>
-                <input type="color" id="colorPicker" onchange="colorChanged()">
             </td>
         </tr>
 
