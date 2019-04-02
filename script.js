@@ -39,7 +39,10 @@ function toolChange(vlu){
 }
 
 function rgbToHex(rgb){
-    return "#" + ((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1);
+    if(rgb == '0,0,0,0')
+        return 'none'
+    else
+        return "#" + ((1 << 24) + (rgb[0] << 16) + (rgb[1] << 8) + rgb[2]).toString(16).slice(1);
 }
 function mouseClick(){
     if(event.which == 1){    
@@ -53,13 +56,14 @@ function mouseClick(){
         }
         else
         if(toolIndex==2){
-            floodFill(x,y,Color,'#000000');
+            let c = rgbToHex(ctx.getImageData(x,y,1,1).data);
+            ctx.fillStyle = Color;
+            floodFill(convertPoint(x,y),c);
         }
         else
         if(toolIndex==3){
             pip()
-        }
-        
+        }      
     } 
     else
     if(event.which == 2){
@@ -69,7 +73,7 @@ function mouseClick(){
     if(event.which == 3){
         let x = event.clientX - Canvas.getBoundingClientRect().left;
         let y = event.clientY - Canvas.getBoundingClientRect().top;
-        let p1 = convertPoint(x,y);       
+        let p1 = convertPoint(x,y);
         p2=p1;
         if(toolIndex==1){
             drawLine(p2,p1,0);
@@ -216,8 +220,26 @@ function pip(){
             }                
             Tools[0].style.boxShadow = 'inset 0 0 0 2px blue';
         }
-    }    
-    
+    }
+}
+
+function floodFill(p,c){
+    if(!(p.x==W || p.x<0 || p.y==H || p.y<0)){
+        ctx.fillRect(p.x,p.y,pixelSize,pixelSize);
+
+        if(rgbToHex(ctx.getImageData(p.x+pixelSize,p.y,1,1).data)==c){
+            floodFill(convertPoint(p.x+pixelSize,p.y),c);
+        }    
+        if(rgbToHex(ctx.getImageData(p.x,p.y+pixelSize,1,1).data)==c){
+            floodFill(convertPoint(p.x,p.y+pixelSize),c);
+        }    
+        if(rgbToHex(ctx.getImageData(p.x-pixelSize,p.y,1,1).data)==c){
+            floodFill(convertPoint(p.x-pixelSize,p.y),c);
+        }
+        if(rgbToHex(ctx.getImageData(p.x,p.y-pixelSize,1,1).data)==c){
+            floodFill(convertPoint(p.x,p.y-pixelSize),c);
+        }
+    }
 }
 
 drawGrid();
@@ -244,50 +266,4 @@ function drawGrid(){
         else
         k=true;
     }
-}
-
-function floodFill(x, y, color, borderColor){
-    var imageData = ctx.getImageData(0, 0, W, H);
-    var width = W;
-    var height = H;
-    var stack = [[x, y]];
-    var pixel;
-    var point = 0;
-    while (stack.length > 0)
-    {   
-        pixel = stack.pop();
-        if (pixel[0] < 0 || pixel[0] >= width)
-            continue;
-        if (pixel[1] < 0 || pixel[1] >= height)
-            continue;
-        
-        // Alpha
-        point = pixel[1] * 4 * width + pixel[0] * 4 + 3;
-        
-        // Если это не рамка и ещё не закрасили
-        if (imageData.data[point] != borderColor && imageData.data[point] != color)
-        {
-            // Закрашиваем
-            imageData.data[point] = color;
-            
-            // Ставим соседей в стек на проверку
-            stack.push([
-                pixel[0] - 1,
-                pixel[1]
-            ]);
-            stack.push([
-                pixel[0] + 1,
-                pixel[1]
-            ]);
-            stack.push([
-                pixel[0],
-                pixel[1] - 1
-            ]);
-            stack.push([
-                pixel[0],
-                pixel[1] + 1
-            ]);
-        }
-    }
-    ctx.putImageData(imageData, 0, 0);
 }
