@@ -13,6 +13,7 @@ let Tools = document.getElementsByClassName('Tools');
 let toolsImages = ['url(Tools/pencil.png)','url(Tools/eraser.png)','url(Tools/fill.png)','url(Tools/pipette.png)'];
 let colors = ['#000000','#FFFFFF','#808080','#D3D3D3','#8B0000','#964B00','#FF0000','#FF69B4','#FFA500','#FFD700','#FFFF00','#FFD697','#00FF00','#ADFF2F','#4B0082','#40E0D0','#0000FF','#800080'];
 let colorDiv = document.getElementsByClassName("colorDiv");
+let matrixPixels = [W/pixelSize,H/pixelSize];
 for(let i  = 0;i<colorDiv.length;i++){
     colorDiv[i].style.backgroundColor = colors[i];
 }
@@ -62,12 +63,18 @@ function mouseClick(){
         }
         else
         if(toolIndex==3){
-            pip()
+            let x = event.clientX - Canvas.getBoundingClientRect().left;
+            let y = event.clientY - Canvas.getBoundingClientRect().top;
+            let p1 = convertPoint(x,y);
+            pip(p1);
         }      
     } 
     else
     if(event.which == 2){
-        pip();
+        let x = event.clientX - Canvas.getBoundingClientRect().left;
+        let y = event.clientY - Canvas.getBoundingClientRect().top;
+        let p1 = convertPoint(x,y);
+        pip(p1);
     }
     else
     if(event.which == 3){
@@ -97,14 +104,20 @@ function mouseMove(){
         }
         else
         if(toolIndex==3){
-            pip()
+            let x = event.clientX - Canvas.getBoundingClientRect().left;
+            let y = event.clientY - Canvas.getBoundingClientRect().top;
+            let p1 = convertPoint(x,y);
+            pip(p1);
         }
 
         p2=p1;
     }
     else
-    if(event.which == 2){        
-        pip();
+    if(event.which == 2){
+        let x = event.clientX - Canvas.getBoundingClientRect().left;
+        let y = event.clientY - Canvas.getBoundingClientRect().top;
+        let p1 = convertPoint(x,y);
+        pip(p1);
     }else
     if(event.which == 3){
         let x = event.clientX - Canvas.getBoundingClientRect().left;
@@ -165,20 +178,24 @@ function drawLine(P1,P2,n){
     
     if(n == 0){
         ctx.fillRect(P2.x,P2.y,pixelSize,pixelSize);
+        matrixPixels[P2.x/pixelSize,P2.y/pixelSize] = Color;
     }
     else
     if(n == 1){        
-        ctx.clearRect(P2.x, P2.y, pixelSize, pixelSize);
+        ctx.clearRect(P2.x, P2.y, pixelSize, pixelSize);        
+        matrixPixels[P2.x/pixelSize,P2.y/pixelSize] = "";
     }
     
     while(P1.x != P2.x || P1.y != P2.y) 
     {        
         if(n == 0){
-            ctx.fillRect(P1.x,P1.y,pixelSize,pixelSize);
+            ctx.fillRect(P1.x,P1.y,pixelSize,pixelSize);            
+            matrixPixels[P1.x/pixelSize,P1.y/pixelSize] = Color;
         }
         else
         if(n == 1){        
-            ctx.clearRect(P1.x, P1.y, pixelSize, pixelSize);
+            ctx.clearRect(P1.x, P1.y, pixelSize, pixelSize);            
+            matrixPixels[P1.x/pixelSize,P1.y/pixelSize] = "";
         }
 
         let error2 = error * 2;
@@ -196,13 +213,13 @@ function drawLine(P1,P2,n){
     }
 }
 
-function pip(){
-    let clr = ctx.getImageData(event.clientX - Canvas.getBoundingClientRect().left,event.clientY - Canvas.getBoundingClientRect().top,1,1).data;    
-    colorPicker.value=rgbToHex(clr);
-    Color = colorPicker.value;
+function pip(p){
+     let clr = matrixPixels[p.x/pixelSize,p.y/pixelSize]; 
+
+    colorPicker.value = Color = clr;
     changeCursor(3);
     
-    if(clr=='0,0,0,0'){
+    if(clr==''){
         if(toolIndex!=3){                
             toolIndex=1;                
             for(let i = 0; i<Tools.length;i++){
