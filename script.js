@@ -47,32 +47,23 @@ function mouseClick(){
         let y = event.clientY - Canvas.getBoundingClientRect().top;
         let p1 = convertPoint(x,y);
         p2=p1;
-        drawLine(p2,p1,0);
+        if(toolIndex<2){
+            drawLine(p2,p1,toolIndex);
+            changeCursor(toolIndex);
+        }
+        else
+        if(toolIndex==2){
+            floodFill(x,y,Color,'#000000');
+        }
+        else
+        if(toolIndex==3){
+            pip()
+        }
+        
     } 
     else
     if(event.which == 2){
-        let clr = ctx.getImageData(event.clientX - Canvas.getBoundingClientRect().left,event.clientY - Canvas.getBoundingClientRect().top,1,1).data;
-        if(clr=='0,0,0,0'){
-            toolIndex=1;
-            changeCursor(1);
-            for(let i = 0; i<Tools.length;i++){
-                Tools[i].style.boxShadow = 'inset 0 0 0 0 blue';
-            }            
-            Tools[1].style.boxShadow = 'inset 0 0 0 2px blue';
-            
-        }
-        else
-        {
-            colorPicker.value=rgbToHex(clr);
-            Color = colorPicker.value;
-            toolIndex=0;
-            changeCursor(0);
-            for(let i = 0; i<Tools.length;i++){
-                Tools[i].style.boxShadow = 'inset 0 0 0 0 blue';
-            }
-            
-            Tools[0].style.boxShadow = 'inset 0 0 0 2px blue';
-        }    
+        pip();
     }
     else
     if(event.which == 3){
@@ -80,7 +71,14 @@ function mouseClick(){
         let y = event.clientY - Canvas.getBoundingClientRect().top;
         let p1 = convertPoint(x,y);       
         p2=p1;
-        drawLine(p2,p1,1);
+        if(toolIndex==1){
+            drawLine(p2,p1,0);
+            changeCursor(0);
+        }else
+        if(toolIndex==0){            
+            drawLine(p2,p1,1);
+            changeCursor(1);
+        }
     }    
 }
 function mouseMove(){
@@ -89,21 +87,45 @@ function mouseMove(){
         let x = event.clientX - Canvas.getBoundingClientRect().left;
         let y = event.clientY - Canvas.getBoundingClientRect().top;
         let p1 = convertPoint(x,y);
-        drawLine(p2,p1,0);
+        if(toolIndex<2){
+            drawLine(p2,p1,toolIndex);
+            changeCursor(toolIndex);
+        }
+        else
+        if(toolIndex==3){
+            pip()
+        }
+
         p2=p1;
     }
     else
+    if(event.which == 2){        
+        pip();
+    }else
     if(event.which == 3){
         let x = event.clientX - Canvas.getBoundingClientRect().left;
         let y = event.clientY - Canvas.getBoundingClientRect().top;
         let p1 = convertPoint(x,y);
-        drawLine(p2,p1,1);
+        if(toolIndex==1){
+            drawLine(p2,p1,0);
+            changeCursor(0);
+        }else
+        if(toolIndex==0){            
+            drawLine(p2,p1,1);
+            changeCursor(1);
+        }
         p2=p1;
-    }else
-    if(event.which != 2){
+    }
+    else
+    {
         changeCursor(toolIndex);
     }
 }
+
+function mouseUp(){    
+    changeCursor(toolIndex);
+}
+
 document.getElementById("Draw_Canvas").oncontextmenu=new Function('return false');
 
 function colorDivHover(ind){
@@ -137,49 +159,24 @@ function drawLine(P1,P2,n){
     
     let error = deltaX - deltaY;
     
-    if(toolIndex == 0 && n == 0){
+    if(n == 0){
         ctx.fillRect(P2.x,P2.y,pixelSize,pixelSize);
-        changeCursor(0);
     }
     else
-    if(toolIndex == 0)
-    {
+    if(n == 1){        
         ctx.clearRect(P2.x, P2.y, pixelSize, pixelSize);
-        changeCursor(1);
-    }
-
-    if(toolIndex == 1 && n == 0){
-        ctx.clearRect(P2.x, P2.y, pixelSize, pixelSize);
-        changeCursor(1);
-    }
-    else
-    if(toolIndex == 1){
-        ctx.fillRect(P2.x,P2.y,pixelSize,pixelSize);
-        changeCursor(0);
     }
     
     while(P1.x != P2.x || P1.y != P2.y) 
     {        
-        if(toolIndex == 0 && n == 0){
-        ctx.fillRect(P1.x,P1.y,pixelSize,pixelSize);
-        changeCursor(0);
+        if(n == 0){
+            ctx.fillRect(P1.x,P1.y,pixelSize,pixelSize);
         }
         else
-        if(toolIndex == 0)
-        {
+        if(n == 1){        
             ctx.clearRect(P1.x, P1.y, pixelSize, pixelSize);
-            changeCursor(1);
         }
 
-        if(toolIndex == 1 && n == 0){
-            ctx.clearRect(P1.x, P1.y, pixelSize, pixelSize);
-            changeCursor(1);
-        }
-        else
-        if(toolIndex == 1){
-            ctx.fillRect(P1.x,P1.y,pixelSize,pixelSize);
-            changeCursor(0);
-        }
         let error2 = error * 2;
         
         if(error2 > -deltaY) 
@@ -193,6 +190,34 @@ function drawLine(P1,P2,n){
             P1.y += signY;
         }
     }
+}
+
+function pip(){
+    let clr = ctx.getImageData(event.clientX - Canvas.getBoundingClientRect().left,event.clientY - Canvas.getBoundingClientRect().top,1,1).data;    
+    colorPicker.value=rgbToHex(clr);
+    Color = colorPicker.value;
+    changeCursor(3);
+    
+    if(clr=='0,0,0,0'){
+        if(toolIndex!=3){                
+            toolIndex=1;                
+            for(let i = 0; i<Tools.length;i++){
+                Tools[i].style.boxShadow = 'inset 0 0 0 0 blue';
+            }            
+            Tools[1].style.boxShadow = 'inset 0 0 0 2px blue';
+        }
+    }
+    else
+    {
+        if(toolIndex!=3){
+            toolIndex=0;            
+            for(let i = 0; i<Tools.length;i++){
+                Tools[i].style.boxShadow = 'inset 0 0 0 0 blue';
+            }                
+            Tools[0].style.boxShadow = 'inset 0 0 0 2px blue';
+        }
+    }    
+    
 }
 
 drawGrid();
@@ -219,4 +244,50 @@ function drawGrid(){
         else
         k=true;
     }
+}
+
+function floodFill(x, y, color, borderColor){
+    var imageData = ctx.getImageData(0, 0, W, H);
+    var width = W;
+    var height = H;
+    var stack = [[x, y]];
+    var pixel;
+    var point = 0;
+    while (stack.length > 0)
+    {   
+        pixel = stack.pop();
+        if (pixel[0] < 0 || pixel[0] >= width)
+            continue;
+        if (pixel[1] < 0 || pixel[1] >= height)
+            continue;
+        
+        // Alpha
+        point = pixel[1] * 4 * width + pixel[0] * 4 + 3;
+        
+        // Если это не рамка и ещё не закрасили
+        if (imageData.data[point] != borderColor && imageData.data[point] != color)
+        {
+            // Закрашиваем
+            imageData.data[point] = color;
+            
+            // Ставим соседей в стек на проверку
+            stack.push([
+                pixel[0] - 1,
+                pixel[1]
+            ]);
+            stack.push([
+                pixel[0] + 1,
+                pixel[1]
+            ]);
+            stack.push([
+                pixel[0],
+                pixel[1] - 1
+            ]);
+            stack.push([
+                pixel[0],
+                pixel[1] + 1
+            ]);
+        }
+    }
+    ctx.putImageData(imageData, 0, 0);
 }
