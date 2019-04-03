@@ -30,16 +30,16 @@ changeCursor(0);
 function changeCursor(n){
     Canvas.style.cursor = toolsImages[n]+'0 17,auto';
 }
-// function keyPress(e){
-//     if(e.code=='KeyB')
-//         toolChange(0);
-//     if(e.code=='KeyE')
-//         toolChange(1);
-//     if(e.code=='KeyG')
-//         toolChange(2);
-//     if(e.code=='KeyI')
-//         toolChange(3);    
-// }
+function keyPress(e){
+    if(e.code=='KeyB')
+        toolChange(0);
+    if(e.code=='KeyE')
+        toolChange(1);
+    if(e.code=='KeyG')
+        toolChange(2);
+    if(e.code=='KeyI')
+        toolChange(3);    
+}
 function colorChanged(){
     Color = colorPicker.value;
 }
