@@ -2,7 +2,7 @@
 <head><title>PixelArt</title>
     <link rel="stylesheet" href="style.css">  
 </head>
-<body>
+<body onkeypress="keyPress(event)">
     <div class="canvas">
         <canvas width="640px" height="640px" id="Back_Canvas"></canvas>
         <canvas width="640px" height="640px" id="Draw_Canvas" onmousemove="mouseMove()" onmouseup="mouseUp()" onmousedown="mouseClick()"></canvas>

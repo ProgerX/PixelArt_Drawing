@@ -9,16 +9,16 @@ let w = W/pixelSize;
 let h = H/pixelSize;
 let p2;
 let colorPicker = document.getElementById("colorPicker");
-let Color = colorPicker.value;
+let Color =colorPicker.value;
 let toolIndex = 0;
 let Tools = document.getElementsByClassName('Tools');
 let toolsImages = ['url(Tools/pencil.png)','url(Tools/eraser.png)','url(Tools/fill.png)','url(Tools/pipette.png)'];
 let colors = ['#000000','#FFFFFF','#808080','#D3D3D3','#8B0000','#964B00','#FF0000','#FF69B4','#FFA500','#FFD700','#FFFF00','#FFD697','#00FF00','#ADFF2F','#4B0082','#40E0D0','#0000FF','#800080'];
 let colorDiv = document.getElementsByClassName("colorDiv");
-let matrixPixels =new Array(W/pixelSize);
-for(let i = 0;i<W/pixelSize;i++){  
-    matrixPixels[i]=new Array(H/pixelSize);
-    for(let j =0;j<H/pixelSize;j++)
+let matrixPixels =new Array(w);
+for(let i = 0;i<w;i++){  
+    matrixPixels[i]=new Array(h);
+    for(let j =0;j<h;j++)
         matrixPixels[i][j]=""
 }
     
@@ -30,7 +30,17 @@ changeCursor(0);
 function changeCursor(n){
     Canvas.style.cursor = toolsImages[n]+'0 17,auto';
 }
-
+function keyPress(e){
+    if(e.code=='KeyB')
+        toolChange(0);
+    if(e.code=='KeyE')
+        toolChange(1);
+    if(e.code=='KeyG')
+        toolChange(2);
+    if(e.code=='KeyI')
+        toolChange(3);
+    
+}
 function colorChanged(){
     Color = colorPicker.value;
 }
@@ -228,24 +238,15 @@ function pip(p){
     changeCursor(3);
     
     if(clr==""){
-        if(toolIndex!=3){                
-            toolIndex=1;                
-            for(let i = 0; i<Tools.length;i++){
-                Tools[i].style.boxShadow = 'inset 0 0 0 0 blue';
-            }            
-            Tools[1].style.boxShadow = 'inset 0 0 0 2px blue';
+        if(toolIndex!=3){
+            toolChange(1);
         }
     }
     else
-    {   
-        
+    {
         colorPicker.value = Color = clr;
-        if(toolIndex!=3){
-            toolIndex=0;            
-            for(let i = 0; i<Tools.length;i++){
-                Tools[i].style.boxShadow = 'inset 0 0 0 0 blue';
-            }                
-            Tools[0].style.boxShadow = 'inset 0 0 0 2px blue';
+        if(toolIndex!=3 && toolIndex!=2){
+            toolChange(0);
         }
     }
 }
