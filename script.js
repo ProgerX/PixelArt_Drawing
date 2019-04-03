@@ -1,4 +1,4 @@
-const pixelSize = 30, backPixelSize = 10;W=720;H=720;
+const pixelSize = 10, backPixelSize = 10;W=720;H=720;
 let Canvas = document.getElementById("Draw_Canvas");
 Canvas.width=W;
 Canvas.height=H;
