@@ -5,6 +5,8 @@ let backCanvas = document.getElementById("Back_Canvas");
 let ctxBack = backCanvas.getContext("2d");
 let W = Canvas.offsetWidth;
 let H = Canvas.offsetHeight;
+let w = W/pixelSize;
+let h = H/pixelSize;
 let p2;
 let colorPicker = document.getElementById("colorPicker");
 let Color = colorPicker.value;
@@ -13,7 +15,14 @@ let Tools = document.getElementsByClassName('Tools');
 let toolsImages = ['url(Tools/pencil.png)','url(Tools/eraser.png)','url(Tools/fill.png)','url(Tools/pipette.png)'];
 let colors = ['#000000','#FFFFFF','#808080','#D3D3D3','#8B0000','#964B00','#FF0000','#FF69B4','#FFA500','#FFD700','#FFFF00','#FFD697','#00FF00','#ADFF2F','#4B0082','#40E0D0','#0000FF','#800080'];
 let colorDiv = document.getElementsByClassName("colorDiv");
-let matrixPixels = [W/pixelSize,H/pixelSize];
+let matrixPixels =new Array(W/pixelSize);
+for(let i = 0;i<W/pixelSize;i++){  
+    matrixPixels[i]=new Array(H/pixelSize);
+    for(let j =0;j<H/pixelSize;j++)
+        matrixPixels[i][j]=""
+}
+    
+
 for(let i  = 0;i<colorDiv.length;i++){
     colorDiv[i].style.backgroundColor = colors[i];
 }
@@ -57,9 +66,9 @@ function mouseClick(){
         }
         else
         if(toolIndex==2){
-            let c = rgbToHex(ctx.getImageData(x,y,1,1).data);
+            let c = matrixPixels[p1.x/pixelSize][p1.y/pixelSize];
             ctx.fillStyle = Color;
-            floodFill(convertPoint(x,y),c);
+            floodFill(convertPoint(x,y).x/pixelSize,convertPoint(x,y).y/pixelSize,c);
         }
         else
         if(toolIndex==3){
@@ -178,24 +187,24 @@ function drawLine(P1,P2,n){
     
     if(n == 0){
         ctx.fillRect(P2.x,P2.y,pixelSize,pixelSize);
-        matrixPixels[P2.x/pixelSize,P2.y/pixelSize] = Color;
+        matrixPixels[P2.x/pixelSize][P2.y/pixelSize] = Color;
     }
     else
     if(n == 1){        
         ctx.clearRect(P2.x, P2.y, pixelSize, pixelSize);        
-        matrixPixels[P2.x/pixelSize,P2.y/pixelSize] = "";
+        matrixPixels[P2.x/pixelSize][P2.y/pixelSize] = "";
     }
     
     while(P1.x != P2.x || P1.y != P2.y) 
     {        
         if(n == 0){
             ctx.fillRect(P1.x,P1.y,pixelSize,pixelSize);            
-            matrixPixels[P1.x/pixelSize,P1.y/pixelSize] = Color;
+            matrixPixels[P1.x/pixelSize][P1.y/pixelSize] = Color;
         }
         else
         if(n == 1){        
             ctx.clearRect(P1.x, P1.y, pixelSize, pixelSize);            
-            matrixPixels[P1.x/pixelSize,P1.y/pixelSize] = "";
+            matrixPixels[P1.x/pixelSize][P1.y/pixelSize] = "";
         }
 
         let error2 = error * 2;
@@ -214,12 +223,11 @@ function drawLine(P1,P2,n){
 }
 
 function pip(p){
-     let clr = matrixPixels[p.x/pixelSize,p.y/pixelSize]; 
 
-    colorPicker.value = Color = clr;
+    let clr = matrixPixels[p.x/pixelSize][p.y/pixelSize]; 
     changeCursor(3);
     
-    if(clr==''){
+    if(clr==""){
         if(toolIndex!=3){                
             toolIndex=1;                
             for(let i = 0; i<Tools.length;i++){
@@ -229,7 +237,9 @@ function pip(p){
         }
     }
     else
-    {
+    {   
+        
+        colorPicker.value = Color = clr;
         if(toolIndex!=3){
             toolIndex=0;            
             for(let i = 0; i<Tools.length;i++){
@@ -240,23 +250,27 @@ function pip(p){
     }
 }
 
-function floodFill(p,c){
-    if(!(p.x==W || p.x<0 || p.y==H || p.y<0)){
-        ctx.fillRect(p.x,p.y,pixelSize,pixelSize);
+function floodFill(x,y,c){
+    ctx.fillRect(x*pixelSize,y*pixelSize,pixelSize,pixelSize);
+    matrixPixels[x][y]=Color;
 
-        if(rgbToHex(ctx.getImageData(p.x+pixelSize,p.y,1,1).data)==c){
-            floodFill(convertPoint(p.x+pixelSize,p.y),c);
-        }    
-        if(rgbToHex(ctx.getImageData(p.x,p.y+pixelSize,1,1).data)==c){
-            floodFill(convertPoint(p.x,p.y+pixelSize),c);
-        }    
-        if(rgbToHex(ctx.getImageData(p.x-pixelSize,p.y,1,1).data)==c){
-            floodFill(convertPoint(p.x-pixelSize,p.y),c);
+    if(x!=w-1)
+        if(matrixPixels[x+1][y]==c){
+            floodFill(x+1,y,c);
         }
-        if(rgbToHex(ctx.getImageData(p.x,p.y-pixelSize,1,1).data)==c){
-            floodFill(convertPoint(p.x,p.y-pixelSize),c);
+    if(y!=h-1)    
+        if(matrixPixels[x][y+1]==c){
+            floodFill(x,y+1,c);
+        } 
+    if(x!=0)   
+        if(matrixPixels[x-1][y]==c){
+            floodFill(x-1,y,c);
         }
-    }
+    if(y!=0)
+        if(matrixPixels[x][y-1]==c){
+            floodFill(x,y-1,c);
+        } 
+
 }
 
 drawGrid();
