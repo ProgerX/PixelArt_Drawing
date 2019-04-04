@@ -1,4 +1,4 @@
-const pixelSize = 30, backPixelSize = 10;W=720;H=720;
+const pixelSize = 10, backPixelSize = 10;W=720;H=720;
 let Canvas = document.getElementById("Draw_Canvas");
 Canvas.width=W;
 Canvas.height=H;
@@ -15,13 +15,15 @@ let Color =colorPicker.value;
 let toolIndex = 0;
 let Tools = document.getElementsByClassName('Tools');
 let toolsImages = ['url(Images/Tools/pencil.png)','url(Images/Tools/eraser.png)','url(Images/Tools/fill.png)','url(Images/Tools/pipette.png)'];
-let colors = ['#000000','#FFFFFF','#808080','#D3D3D3','#8B0000','#964B00','#FF0000','#FF69B4','#FFA500','#FFD700','#FFFF00','#FFD697','#00FF00','#ADFF2F','#4B0082','#40E0D0','#0000FF','#800080'];
+let colors = ['#000000','#FFFFFF','#808080','#D3D3D3','#8B0000','#964B00','#FF0000','#FF69B4','#FFA500','#FFD700','#FFFF00','#FFD697','#00FF00','#ADFF2F','#0000FF','#40E0D0','#4B0082','#800080'];
 let colorDiv = document.getElementsByClassName("colorDiv");
+let steps = new Array;
+let stepIndex = -1;
 let matrixPixels =new Array(w);
 for(let i = 0;i<w;i++){  
     matrixPixels[i]=new Array(h);
     for(let j =0;j<h;j++)
-        matrixPixels[i][j]=""
+        matrixPixels[i][j]="0"
 }
 
 
@@ -40,7 +42,11 @@ function keyPress(e){
     if(e.code=='KeyG')
         toolChange(2);
         if(e.code=='KeyI')
-        toolChange(3);    
+        toolChange(3); 
+        if(e.code=='KeyZ' && e.ctrlKey)
+        undo(0);
+        if(e.code=='KeyY' && e.ctrlKey)
+        undo(1);
     }
     function colorChanged(){
         Color = colorPicker.value;
@@ -72,6 +78,54 @@ function toolChange(vlu){
     
     Tools[vlu].style.boxShadow = 'inset 0 0 0 2px white';
 }
+function stepTaken(){    
+    stepIndex++;
+    if(steps.length>stepIndex)
+        for(let i = steps.length; i>stepIndex;i--){
+            steps.pop();
+        }        
+    steps.push('');
+}
+function undo(n){
+    if(n==0 && steps.length!=0){
+        let str1 = steps[stepIndex].split(';');
+        str1.pop();
+        let str2 = Array();
+        for(let i = 0; i < str1.length;i++){
+            str2.push(str1[i].split(','));
+            ctx.fillStyle = str2[i][2];
+            matrixPixels[str2[i][0]][str2[i][1]] = str2[i][2];
+            if(str2[i][2] == "0"){
+                ctx.clearRect(str2[i][0]*pixelSize, str2[i][1]*pixelSize, pixelSize, pixelSize)
+            }
+            else{
+                ctx.fillRect(str2[i][0]*pixelSize, str2[i][1]*pixelSize,pixelSize,pixelSize);
+            }
+        }
+
+        stepIndex--; 
+    }   
+    else
+    if(n==1 && steps.length>stepIndex+1)
+    {
+        stepIndex++;
+        let str1 = steps[stepIndex].split(';');
+        str1.pop();
+        let str2 = Array();
+        for(let i = 0; i < str1.length;i++){
+            str2.push(str1[i].split(','));
+            ctx.fillStyle = str2[i][3];
+            matrixPixels[str2[i][0]][str2[i][1]] = str2[i][3];
+            if(str2[i][3] == "0"){
+                ctx.clearRect(str2[i][0]*pixelSize, str2[i][1]*pixelSize, pixelSize, pixelSize)
+            }
+            else{
+                ctx.fillRect(str2[i][0]*pixelSize, str2[i][1]*pixelSize,pixelSize,pixelSize);
+            }
+        }
+    }
+}
+
 function getImage(){
     let cnvs = document.createElement('canvas');
     let ctxSave = cnvs.getContext("2d");
@@ -80,7 +134,7 @@ function getImage(){
     cnvs.height=h;
     for(let i = 0;i<w;i++){
         for(let j =0;j<h;j++){    
-            if(matrixPixels[i][j]!=""){
+            if(matrixPixels[i][j]!="0"){
                 ctxSave.fillStyle = matrixPixels[i][j];
                 ctxSave.fillRect(i,j,1,1);
             }
@@ -89,6 +143,7 @@ function getImage(){
     let imageData = cnvs.toDataURL();
     let image = new Image();
     image.src = imageData;
+    cnvs.remove();
     return image;
 } 
 function saveImage(image) {
@@ -99,7 +154,7 @@ function saveImage(image) {
     link.click();
 } 
 function saveCanvasAsImageFile(){
-    let image = getImage(document.getElementById("canvas"));
+    let image = getImage();
     saveImage(image);
 }
 function rgbToHex(rgb){
@@ -115,12 +170,14 @@ function mouseClick(){
         let p1 = convertPoint(x,y);
         p2=p1;
         if(toolIndex<2){
+            stepTaken();
             drawLine(p2,p1,toolIndex);
             changeCursor(toolIndex);
         }
         else
-        if(toolIndex==2){
+        if(toolIndex==2){            
             let c = matrixPixels[p1.x/pixelSize][p1.y/pixelSize];
+            stepTaken();            
             ctx.fillStyle = Color;
             floodFill(convertPoint(x,y).x/pixelSize,convertPoint(x,y).y/pixelSize,c);
         }
@@ -146,10 +203,12 @@ function mouseClick(){
         let p1 = convertPoint(x,y);
         p2=p1;
         if(toolIndex==1){
+            stepTaken();
             drawLine(p2,p1,0);
             changeCursor(0);
         }else
-        if(toolIndex==0){            
+        if(toolIndex==0){
+            stepTaken();      
             drawLine(p2,p1,1);
             changeCursor(1);
         }
@@ -225,26 +284,30 @@ function drawLine(P1,P2,n){
     
     let error = deltaX - deltaY;
     
-    if(n == 0){
+    if(n == 0 && matrixPixels[P2.x/pixelSize][P2.y/pixelSize] != Color){
         ctx.fillRect(P2.x,P2.y,pixelSize,pixelSize);
+        steps[stepIndex]+=P2.x/pixelSize + ',' + P2.y/pixelSize + ',' + matrixPixels[P2.x/pixelSize][P2.y/pixelSize] + ',' + Color + ';' ;
         matrixPixels[P2.x/pixelSize][P2.y/pixelSize] = Color;
     }
     else
-    if(n == 1){        
+    if(n == 1 && matrixPixels[P2.x/pixelSize][P2.y/pixelSize] != "0"){        
         ctx.clearRect(P2.x, P2.y, pixelSize, pixelSize);        
-        matrixPixels[P2.x/pixelSize][P2.y/pixelSize] = "";
+        steps[stepIndex]+=P2.x/pixelSize + ',' + P2.y/pixelSize + ',' + matrixPixels[P2.x/pixelSize][P2.y/pixelSize] + ',' +  "0" + ';' ;
+        matrixPixels[P2.x/pixelSize][P2.y/pixelSize] = "0";
     }
     
     while(P1.x != P2.x || P1.y != P2.y) 
     {        
-        if(n == 0){
+        if(n == 0 && matrixPixels[P1.x/pixelSize][P1.y/pixelSize] != Color){
             ctx.fillRect(P1.x,P1.y,pixelSize,pixelSize);            
+            steps[stepIndex]+=P1.x/pixelSize + ',' + P1.y/pixelSize + ',' + matrixPixels[P1.x/pixelSize][P1.y/pixelSize] + ',' + Color +';' ;
             matrixPixels[P1.x/pixelSize][P1.y/pixelSize] = Color;
         }
         else
-        if(n == 1){        
+        if(n == 1 && matrixPixels[P1.x/pixelSize][P1.y/pixelSize] != "0"){        
             ctx.clearRect(P1.x, P1.y, pixelSize, pixelSize);            
-            matrixPixels[P1.x/pixelSize][P1.y/pixelSize] = "";
+            steps[stepIndex]+=P1.x/pixelSize + ',' + P1.y/pixelSize + ',' + matrixPixels[P1.x/pixelSize][P1.y/pixelSize] + ',' + "0" + ';' ;
+            matrixPixels[P1.x/pixelSize][P1.y/pixelSize] = "0";
         }
 
         let error2 = error * 2;
@@ -262,27 +325,9 @@ function drawLine(P1,P2,n){
     }
 }
 
-function pip(p){
-
-    let clr = matrixPixels[p.x/pixelSize][p.y/pixelSize]; 
-    changeCursor(3);
-    
-    if(clr==""){
-        if(toolIndex!=3){
-            toolChange(1);
-        }
-    }
-    else
-    {
-        colorPicker.value = Color = clr;
-        if(toolIndex!=3 && toolIndex!=2){
-            toolChange(0);
-        }
-    }
-}
-
 function floodFill(x,y,c){
     ctx.fillRect(x*pixelSize,y*pixelSize,pixelSize,pixelSize);
+    steps[stepIndex]+= x + ',' + y + ',' + matrixPixels[x][y] + Color + ';' ;
     matrixPixels[x][y]=Color;
 
     if(x!=w-1)
@@ -301,7 +346,24 @@ function floodFill(x,y,c){
         if(matrixPixels[x][y-1]==c){
             floodFill(x,y-1,c);
         } 
+}
+function pip(p){
 
+    let clr = matrixPixels[p.x/pixelSize][p.y/pixelSize]; 
+    changeCursor(3);
+    
+    if(clr=="0"){
+        if(toolIndex!=3){
+            toolChange(1);
+        }
+    }
+    else
+    {
+        colorPicker.value = Color = clr;
+        if(toolIndex!=3 && toolIndex!=2){
+            toolChange(0);
+        }
+    }
 }
 
 drawGrid();
