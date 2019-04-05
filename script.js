@@ -1,4 +1,4 @@
-const pixelSize = 10, backPixelSize = 10;W=720;H=720;
+const pixelSize = 10, backPixelSize = 10;W=640;H=640;
 let Canvas = document.getElementById("Draw_Canvas");
 Canvas.width=W;
 Canvas.height=H;
@@ -327,7 +327,7 @@ function drawLine(P1,P2,n){
 
 function floodFill(x,y,c){
     ctx.fillRect(x*pixelSize,y*pixelSize,pixelSize,pixelSize);
-    steps[stepIndex]+= x + ',' + y + ',' + matrixPixels[x][y] + Color + ';' ;
+    steps[stepIndex]+= x + ',' + y + ',' + matrixPixels[x][y] + ',' + Color + ';' ;
     matrixPixels[x][y]=Color;
 
     if(x!=w-1)
