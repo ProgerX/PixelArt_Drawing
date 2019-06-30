@@ -1,8 +1,12 @@
 <html>
-<head><title>PixelArt</title>
+
+<head>
+    <title>PixelArt</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <link rel="shortcut icon" href="Images/Icon.png" type="image/png">
 </head>
+
 <body onkeypress="keyPress(event)">
 
     <div class="Header">
@@ -13,7 +17,7 @@
         <canvas id="Back_Canvas"></canvas>
         <canvas id="Draw_Canvas" onmousemove="mouseMove()" onmouseup="mouseUp()" onmousedown="mouseClick()"></canvas>
     </div>
-    <div class="ToolBar" >
+    <div class="ToolBar">
         <table border="1">
             <tr>
                 <td>
@@ -133,4 +137,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>
